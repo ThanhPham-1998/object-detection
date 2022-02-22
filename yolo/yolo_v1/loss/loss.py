@@ -21,4 +21,11 @@ class Loss(nn.Module):
         iou_b2 = IOU(preds[..., self.C + 6: self.C + 10], target[..., self.C + 6:self.C + 10])
         ious = torch.cat([iou_b1.unsqueeze(0), iou_b2.unsqueeze(0)], dim=0)
         iou_maxes, bestbox = torch.max(ious, dims=0)
+        exists_box = target[..., self.C].unsqueeze(3)
+        box_predictions = exists_box * (
+            (
+                bestbox * preds[..., self.C + 6:self.C + 10] + (1 - bestbox) * preds[..., self.C + 1:self.C + 5]
+            )
+        )
+        
 
